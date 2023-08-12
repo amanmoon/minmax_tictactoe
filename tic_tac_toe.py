@@ -8,14 +8,14 @@ class tic_tac_toe:
     def initialise_state(self):
         return np.zeros((self.column_number,self.row_number))
 
-    def valid_moves(self,state):
+    def valid_moves(state):
         moves=list()
         for value,player in enumerate(state.reshape(-1)):
             if player==0:
                 moves.append(value)
         return moves
 
-    def state_modify(self,state,action,player):
+    def state_modify(state,action,player):
         row=action//3
         col=action%3
         state[row,col]=player
@@ -24,8 +24,9 @@ class tic_tac_toe:
     def check_terminal_state(self,state,action,player):
         row=action//3
         col=action%3
-        if (np.sum(state[row,:])==player*self.row_number 
-            or np.sum(state[:,col]==player*self.column_number) 
+        print("the row and col is",row,col,player)
+        if (sum(state[row,:])==player*self.row_number 
+            or sum(state[:,col])==player*self.column_number
             or np.trace(state)==player*self.row_number 
             or np.trace(np.fliplr(state))==player*self.row_number):
             return True ,player
@@ -34,28 +35,34 @@ class tic_tac_toe:
         else:
             return False,None                
             
-    def change_player(self,player):
+    def change_player(player):
         return -player
 
+    def play(self,start_player):
+        player=start_player
+        state=self.initialise_state()
+        while True:
+            print(state)
+            print(tic_tac_toe.valid_moves(state))
+            move=int(input(f"Turn of player {player} \nEnter valid move:"))
+            if move not in tic_tac_toe.valid_moves(state):
+                print("Please enter valid move:")
+                continue
+            tic_tac_toe.state_modify(state,move,player)
+            terminate,winner=self.check_terminal_state(state,move,player)
+            if terminate and(winner!=0):
+                print(state)
+                print(f"the winner is {winner}")
+                break
+            if terminate and (winner==0):
+                print(state)
+                print("The game is tie")
+                break
+            player=tic_tac_toe.change_player(player)
+            
+if __name__ == "__main__":
+    game = tic_tac_toe()
+    game.play()
+    
 # game=tic_tac_toe()
-# state=game.initialise_state()
-# player=1
-# while True:
-#     print(state)
-#     print(game.valid_moves(state))
-#     move=int(input("enter one move:"))
-#     if move in game.valid_moves(state):
-#         state=game.state_modify(state,move,player)
-#     else:
-#         print("right move daal madarchood")
-#         continue
-#     end,winner=game.check_terminal_state(state,move,player)
-#     if end and winner!=0:
-#         print(state)
-#         print(f"the winner is {winner}")
-#         break
-#     elif end and winner==0:
-#         print(state)
-#         print("the game is draw")
-#         break
-#     player=game.change_player(player)
+# game.play(-1)
