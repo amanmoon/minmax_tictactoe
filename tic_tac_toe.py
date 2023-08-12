@@ -21,14 +21,13 @@ class tic_tac_toe:
         state[row,col]=player
         return state
 
-    def check_terminal_state(self,state,action,player):
+    def check_terminal_state(state,action,player):
         row=action//3
         col=action%3
-        print("the row and col is",row,col,player)
-        if (sum(state[row,:])==player*self.row_number 
-            or sum(state[:,col])==player*self.column_number
-            or np.trace(state)==player*self.row_number 
-            or np.trace(np.fliplr(state))==player*self.row_number):
+        if (sum(state[row,:])==player*3 
+            or sum(state[:,col])==player*3
+            or np.trace(state)==player*3 
+            or np.trace(np.fliplr(state))==player*3):
             return True ,player
         elif 0 not in state.reshape(-1):
             return True,0
@@ -60,9 +59,9 @@ class tic_tac_toe:
                 break
             player=tic_tac_toe.change_player(player)
             
-if __name__ == "__main__":
-    game = tic_tac_toe()
-    game.play()
+# if __name__ == "__main__":
+#     game = tic_tac_toe()
+#     game.play()
     
 # game=tic_tac_toe()
 # game.play(-1)
