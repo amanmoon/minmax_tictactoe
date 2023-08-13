@@ -9,12 +9,14 @@ class node:
         self.parent=parent
         self.win=0
         
-    def expand(self):
+    def expand(self,computer_player):
+        if node.check_terminal(self,computer_player):
+            exit
         valid_moves=t.valid_moves(self.state)
         children=list()
         for move in valid_moves:
-            child_state=t.state_modify(self.state.copy(),move,-self.player)
-            children.append(node(child_state,-self.player,self))
+            child_state=t.state_modify(self.state.copy(),move,self.player)
+            children.append(node(child_state,-(self.player),self))
         self.child=children
         
     def check_terminal(self,computer_player):
@@ -63,40 +65,68 @@ class node:
         for children in self.child:
             if children.value==self.player:
                 self.value=self.player
+            if children.value==-self.player:
+                self.value=-self.player
             if children.value==computer_player:
                 self.win+=1
                 
     def sigma_move(self,game_state,computer_player):
-        print
         for children in self.child:
-            if self.value==-computer_player:
+            if children.value==-computer_player:
                 self.child.remove(children)
+            
         bestmove_list=self.child.sort(key=lambda node:(node.win),reverse=True)
-        bestmove=bestmove_list[0]
+        bestmove=bestmove_list.pop(0)
         game_state=bestmove
         return game_state
+    
+    @staticmethod
+    def node_search(node,computer_player):
+        topo=[]    
+        visited=set()
+        def build_topo(v):
+            if v not in visited:
+                v.expand()
+                visited.add(v)
+                for child in v.child:
+                    build_topo(child)
+                topo.append(v)
+        build_topo(node)
+        return topo
+        for nodes in topo:
+            if nodes.check_terminal(computer_player):
+                continue
+            nodes.calculate_win(computer_player)
+    def get_layers_deepest_first(root,computer_player):
+        current_layer=[root]
+        next_layer=[]
+        deepest_first_list=list()
+        while True:
+            for childrens in current_layer:
+                childrens.expand(computer_player)
+                next_layer.extend(childrens.child)
+            deepest_first_list=next_layer+deepest_first_list
+            current_layer=next_layer.copy()
+            next_layer.clear()
+            if current_layer==[]:
+                break    
+        return deepest_first_list
+    def run_backprop(root,computer_player):
+        list=node.get_layers_deepest_first(root,computer_player)
+        for nodes in list:
+            if nodes.check_terminal(computer_player):
+                continue
+            nodes.calculate_win(computer_player)
+            
+def visualize_tree(node, depth=0):
+    indentation = "  " * depth
+    print(f"{indentation}Value: {node.value}, Win: {node.win}")
+    
+    for child in node.child:
+        visualize_tree(child, depth + 1)
         
-# g=t()
-# state=g.initialise_state()
-# a=node(state,1)
-# a.expand()
-# b=a.child[0]
-# b.expand()
-# c=b.child[5]
-# c.expand()
-# d=c.child[3]
-# d.expand()
-# e=d.child[0]
-# e.expand()
-# f=e.child[0]
-# f.expand()
-# g=f.child[0]
-# g.expand()
-# h=g.child[0]
-# h.expand()
-# i=h.child[0]
-# i.expand()
-# j=i.child[0]
-# j.check_terminal(1)
-# i.calculate_win(-1)
-# print(g.child)
+game=t()
+state=game.initialise_state()
+sta=node(state,1)
+
+print(node.run_backprop(sta,-1))
