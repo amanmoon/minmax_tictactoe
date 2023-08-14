@@ -47,26 +47,29 @@ class node:
         maxvalue=list()
         for children in self.child:
             maxvalue.append(children.value)
-        if all(i == 0 for i in maxvalue):
+        if all(i == maxvalue[0] for i in maxvalue):
             return self.child[random.randrange(len(maxvalue))]
-        print(maxvalue)
         index_max=maxvalue.index(max(maxvalue))
-        print(index_max)
         return self.child[index_max]
 
     def sigma_move_min(self):
         minvalue=list()
         for children in self.child:
             minvalue.append(children.value)
-        if all(i == 0 for i in minvalue):
+        if all(i == minvalue[0] for i in minvalue):
             return self.child[random.randrange(len(minvalue))]
-        print(minvalue)
         index_min=minvalue.index(min(minvalue))
-        print(index_min)
         return self.child[index_min]
         
     def noob_move(self,action):
-        pass
+        row=action//3
+        col=action%3
+        self.state[row,col]=self.player
+        for children in self.child:
+            if (children.state == self.state).all():
+                print(children)
+                return children
+        
     def calculate_win(self):
         child_value=list()
         for children in self.child:
@@ -77,14 +80,14 @@ class node:
         if self.player==-1:
             self.value=min(child_value)
         
-    def get_layers_deepest_first(root,computer_player):
+    def get_layers_deepest_first(root):
         current_layer=[root]
         next_layer=[]
         deepest_first_list=list()
         
         while True:
             for childrens in current_layer:
-                childrens.expand(computer_player)
+                childrens.expand()
                 next_layer.extend(childrens.child)
             deepest_first_list=next_layer+deepest_first_list
             current_layer=next_layer.copy()
@@ -93,21 +96,40 @@ class node:
                 break
         return deepest_first_list
         
-    def run_backprop(root,computer_player):
-        list=node.get_layers_deepest_first(root,computer_player)
+    def run_backprop(root):
+        list=node.get_layers_deepest_first(root)
         for nodes in list:
             if nodes.check_terminal():
                 continue
             nodes.calculate_win()
 
+game=t()
+state=game.initialise_state()
+human=int(input("As what you wish to play:"))
+state=node(state,human)
+node.run_backprop(state)
 
 
 
-
-
-# game=t()
-# state=game.initialise_state()
-# status=node(state,1)
-# node.run_backprop(status,-1)
-# status=status.sigma_move_max()
-# status=status.sigma_move_min()
+while True:
+    print(state)
+    print(t.valid_moves(state.state))
+    move=int(input("Enter a move:"))
+    while True:
+        if move not in t.valid_moves(state.state):
+            print(t.valid_moves(state.state))
+            move=int(input("Enter a valid move:"))
+        else:
+            break
+    state=state.noob_move(move)
+    state=state.sigma_move_max() if human==-1 else state.sigma_move_min()
+    end,winner=t.check_terminal_state(state.state,move,state.player)
+    if end and winner==human:
+        print("You Won! Congatulations")
+        break
+    elif end and winner==-human:
+        print("you lost bitch.")
+        break
+    elif end and winner==0:
+        print("The game is tie.")
+        break
