@@ -32,7 +32,7 @@ class tic_tac_toe:
         elif 0 not in state.reshape(-1):
             return True,0
         else:
-            return False,None                
+            return False,None          
             
     def change_player(player):
         return -player
