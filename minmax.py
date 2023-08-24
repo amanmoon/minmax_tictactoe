@@ -1,6 +1,7 @@
 from tic_tac_toe import tic_tac_toe as t
 import numpy as np
 import random
+
 class node:
     def __init__(self,state,player,depth=0,parent=None):
         self.value=0
@@ -74,12 +75,18 @@ class node:
         child_value=list()
         for children in self.child:
             child_value.append(children.value)
-            
+        child_value.sort()
         if self.player==1:
-            self.value=max(child_value)            
+            self.value=child_value.pop(-1)   
+            if child_value!=[]:
+                if child_value[-1]==self.value:
+                    self.value+=child_value.pop(-1)
         if self.player==-1:
-            self.value=min(child_value)
-        
+            self.value=child_value.pop(0)
+            if child_value!=[]:
+                if child_value[0]==self.value:
+                    self.value+=child_value.pop(0)
+                
     def get_layers_deepest_first(root):
         current_layer=[root]
         next_layer=[]
@@ -97,11 +104,13 @@ class node:
         return deepest_first_list
         
     def run_backprop(root):
+        root.depth=0
         list=node.get_layers_deepest_first(root)
         for nodes in list:
             if nodes.check_terminal():
                 continue
             nodes.calculate_win()
+            
 
 game=t()
 state=game.initialise_state()
@@ -122,8 +131,11 @@ while True:
         else:
             break
     state=state.noob_move(move)
-    state=state.sigma_move_max() if human==-1 else state.sigma_move_min()
     end,winner=t.check_terminal_state(state.state,move,state.player)
+    if end==False:
+        state=state.sigma_move_max() if human==-1 else state.sigma_move_min()
+    end,winner=t.check_terminal_state(state.state,move,state.player)
+    print(end,winner)
     if end and winner==human:
         print("You Won! Congatulations")
         break
