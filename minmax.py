@@ -5,7 +5,6 @@ import random
 class node:
     def __init__(self,state,player,depth=0,parent=None):
         self.value=0
-        
         self.child=list()
         self.player=player 
         self.state=state
@@ -136,10 +135,7 @@ while True:
         state=state.sigma_move_max() if human==-1 else state.sigma_move_min()
     end,winner=t.check_terminal_state(state.state,move,state.player)
     print(end,winner)
-    if end and winner==human:
-        print("You Won! Congatulations")
-        break
-    elif end and winner==-human:
+    if end and winner==-human:
         print("you lost bitch.")
         break
     elif end and winner==0:
