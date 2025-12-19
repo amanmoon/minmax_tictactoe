@@ -1,5 +1,4 @@
-# sigma_tictactoe
-Minmax Tic Tac Toe
+# Minmax Tic Tac Toe
 
 Welcome to the Minmax Tic Tac Toe project! This is a classic game of Tic Tac Toe implemented with the Minimax algorithm, a popular choice for creating game-playing AI agents. The primary goal of this project is to showcase the implementation of the Minimax algorithm in the context of the simple yet engaging game of Tic Tac Toe.
 
